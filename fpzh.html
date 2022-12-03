@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>分配账号</title>
+    <style>
+        .el-table .warning-row {
+            background: oldlace;
+        }
+
+        .el-table .success-row {
+            background: #f0f9eb;
+        }
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        .topmeun{
+            background-color: aqua;
+        }
+        .topitem{
+            display: inline-block;
+            margin: 20px;
+        }
+        a:hover{
+            color: red;
+        }
+        .topitem a{
+            text-decoration: none;
+        }
+    </style>
+    <link rel="icon" href="1.jpg" type="image/x-icon">
+</head>
+<body>
+<script src="js/vue.js"></script>
+<script src="js/axios-0.18.0.js"></script>
+<!-- 引入样式 -->
+<link rel="stylesheet" href="./element-ui/lib/theme-chalk/index.css">
+<!-- 引入组件库 -->
+<script src="./element-ui/lib/index.js"></script>
+<div class="topmeun">
+    <div class="topitem">
+        <a href="home.html">打分</a>
+    </div>
+    <div  class="topitem">
+        <a href="psf.html">平时分</a>
+    </div>
+    <div  class="topitem">
+        <a href="lookfs.html">查看分数情况</a>
+    </div>
+    <div  class="topitem">
+        <a href="fpzh.html">分配账号</a>
+    </div>
+</div>
+<div id="app">
+    <el-button type="success" @click="dialogVisible = true">添加</el-button>
+    <el-dialog
+            title="提示"
+            :visible.sync="dialogVisible"
+            width="30%"
+            :before-close="handleClose">
+        <el-form ref="form" :model="form" label-width="80px">
+            <el-form-item label="姓名">
+                <el-input v-model="form.name"></el-input>
+            </el-form-item>
+            <el-form-item label="密码">
+                <el-input v-model="form.password"></el-input>
+            </el-form-item>
+            <el-form-item label="部分">
+                <el-select v-model="form.department" placeholder="请选择部门">
+                    <el-option label="组织发展部" value="组织发展部"></el-option>
+                    <el-option label="全媒体中心" value="全媒体中心"></el-option>
+                    <el-option label="就业服务部" value="就业服务部"></el-option>
+                </el-select>
+            </el-form-item>
+
+            <el-form-item>
+                <el-button type="primary" @click="onSubmit">立即添加</el-button>
+                <el-button type="danger" @click="dialogVisible = false">取消</el-button>
+            </el-form-item>
+        </el-form>
+    </el-dialog>
+    <hr>
+    <br>
+    <el-tag>当前你部门已经添加入库的干事</el-tag>
+    <template>
+
+        <el-table
+                :data="tableData"
+                style="width: 100%"
+                :row-class-name="tableRowClassName">
+            <el-table-column
+                    type="index"
+                    width="50">
+            </el-table-column>
+            <el-table-column
+                    prop="name"
+                    label="姓名"
+                    align="center">
+            </el-table-column>
+            <el-table-column
+                    prop="password"
+                    label="密码"
+                    align="center">
+            </el-table-column>
+            <el-table-column
+                    prop="department"
+                    align="center"
+                    label="部门">
+            </el-table-column>
+        </el-table>
+    </template>
+</div>
+
+<script>
+    new Vue({
+        el:'#app',
+        data() {
+            return {
+                dialogVisible: false,
+                tableData: [],
+                timer:null,
+                form: {
+                    name: '',
+                    password:'',
+                    department:''
+                }
+            }
+        },
+        created(){
+            var that_ = this;
+            this.timer = window.setInterval(()=>{
+                axios({
+                    method:"get",
+                    url:"http://47.113.191.237:8080/fpzhServlet"
+                }).then(function (resp) {
+                    that_.tableData = resp.data;
+                })
+            },5000)
+        },
+        mounted(){
+            var that_ = this;
+            axios({
+                method:"get",
+                url:"http://47.113.191.237:8080/fpzhServlet"
+            }).then(function (resp) {
+                that_.tableData = resp.data;
+            })
+        },
+        methods: {
+            tableRowClassName({row, rowIndex}) {
+                if (rowIndex === 1) {
+                    return 'warning-row';
+                } else if (rowIndex === 3) {
+                    return 'success-row';
+                }
+                return '';
+            },
+            onSubmit: function () {
+                var that_ = this;
+                axios({
+                    method: "post",
+                    url: "http://47.113.191.237:8080/fpzhServlet",
+                    data: that_.form
+                })
+                this.dialogVisible = false
+            }
+        }
+    })
+</script>
+</body>
+</html>

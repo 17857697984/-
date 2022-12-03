@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>分数情况查看</title>
+    <style>
+        .el-table .warning-row {
+            background: oldlace;
+        }
+
+        .el-table .success-row {
+            background: #f0f9eb;
+        }
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        .topmeun{
+            background-color: aqua;
+        }
+        .topitem{
+            display: inline-block;
+            margin: 20px;
+        }
+        a:hover{
+            color: red;
+        }
+        .topitem a{
+            text-decoration: none;
+        }
+    </style>
+    <link rel="icon" href="1.jpg" type="image/x-icon">
+</head>
+<body>
+<script src="js/vue.js"></script>
+<script src="js/axios-0.18.0.js"></script>
+<!-- 引入样式 -->
+<link rel="stylesheet" href="./element-ui/lib/theme-chalk/index.css">
+<!-- 引入组件库 -->
+<script src="./element-ui/lib/index.js"></script>
+<div class="topmeun">
+    <div class="topitem">
+        <a href="home.html">打分</a>
+    </div>
+    <div  class="topitem">
+        <a href="psf.html">平时分</a>
+    </div>
+    <div  class="topitem">
+        <a href="lookfs.html">查看分数情况</a>
+    </div>
+    <div  class="topitem">
+        <a href="fpzh.html">分配账号</a>
+    </div>
+</div>
+<div id="app">
+    <template>
+        <el-table
+                :data="tableData"
+                style="width: 100%"
+                :row-class-name="tableRowClassName">
+            <el-table-column
+                    type="index"
+                    width="50">
+            </el-table-column>
+            <el-table-column
+                    prop="id_"
+                    label="选手编号"
+                    align="center">
+            </el-table-column>
+            <el-table-column
+                    prop="name_"
+                    label="姓名"
+                    align="center">
+            </el-table-column>
+            <el-table-column
+                    prop="department_"
+                    align="center"
+                    label="部门">
+            </el-table-column>
+            <el-table-column
+                    prop="mavg_"
+                    align="center"
+                    label="部长均分">
+            </el-table-column>
+            <el-table-column
+                    prop="oavg_"
+                    align="center"
+                    label="干事均分">
+            </el-table-column>
+            <el-table-column
+                    prop="psf"
+                    align="center"
+                    label="平时分">
+            </el-table-column>
+            <el-table-column
+                    prop="total_"
+                    sortable
+                    align="center"
+                    label="总得分">
+            </el-table-column>
+        </el-table>
+    </template>
+</div>
+
+<script>
+    new Vue({
+        el:'#app',
+        data() {
+            return {
+                dialogVisible: false,
+                numberValidateForm: {
+                    age: ''
+                },
+                tableData: [],
+                timer:null
+            }
+        },
+        created(){
+            var that_ = this;
+            this.timer = window.setInterval(()=>{
+                axios({
+                    method:"get",
+                    url:"http://47.113.191.237:8080/lookServlet"
+                }).then(function (resp) {
+                    that_.tableData = resp.data;
+                })
+            },5000)
+        },
+        mounted(){
+            var that_ = this;
+            axios({
+                method:"get",
+                url:"http://47.113.191.237:8080/lookServlet"
+            }).then(function (resp) {
+                that_.tableData = resp.data;
+            })
+        },
+        methods: {
+            tableRowClassName({row, rowIndex}) {
+                if (rowIndex === 1) {
+                    return 'warning-row';
+                } else if (rowIndex === 3) {
+                    return 'success-row';
+                }
+                return '';
+            }
+        },
+    })
+</script>
+</body>
+</html>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>校大学生就业联合会干事之星评分系统</title>
+<!--  <link rel="stylesheet" type="text/css" href="css/index.css">-->
+    <style>
+        body{
+            background-image: url("2.jpg");
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+        *{
+            margin: 0;
+            padding: 0;
+        }
+
+        .top{
+            width: 400px;
+            height: 400px;
+            margin: auto;
+            margin-top: 30px;
+            background-color: rgba(255,255,255,0.5);
+            text-align: center;
+            line-height: 100px;
+        }
+        .f{
+            display: inline-block;
+        }
+    </style>
+    <link rel="icon" href="1.jpg" type="image/x-icon">
+</head>
+<body>
+    <marquee behavior="scrool" direction="left" height="100" style=" margin-top:30px;color:red;font-size: 20px"
+    >请公平公正打分！！发现恶意低分将严肃处理！谢谢。</marquee>
+    <div style="font-size: 60px;color: crimson;margin: auto;text-align: center">校大学生就业联合会干事之星评分系统</div>
+    <div class="top">
+
+        <form action="loginServlet" method="post">
+            <div>
+                <text>账号</text>
+                <input type="text" name="username" id="username">
+            </div>
+            <div>
+                <text>密码</text>
+                <input type="password" name="password" id="password">
+            </div>
+            <div>
+                <text>身份</text>
+                <input type="radio" name="role" value="0">部长
+                <input type="radio" name="role" value="1">干事
+            </div>
+            <input type="submit">
+        </form>
+    </div>
+    <div style="text-align: center;margin-top:30px ">
+        本系统一切事宜最终解释权均归组织发展部所有
+    </div>
+</body>
+</html>

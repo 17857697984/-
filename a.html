@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>干事评分</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        .el-table .warning-row {
+            background: oldlace;
+        }
+
+        .el-table .success-row {
+            background: #f0f9eb;
+        }
+    </style>
+    <link rel="icon" href="1.jpg" type="image/x-icon">
+</head>
+<body>
+<script src="js/vue.js"></script>
+<script src="js/axios-0.18.0.js"></script>
+<!-- 引入样式 -->
+<link rel="stylesheet" href="./element-ui/lib/theme-chalk/index.css">
+<!-- 引入组件库 -->
+<script src="./element-ui/lib/index.js"></script>
+<marquee behavior="scrool" direction="left" style="color:red;"
+>请公平公正打分！！发现恶意低分将严肃处理！谢谢。</marquee>
+<div id="app">
+    <div style="height: 50px;">
+
+<!--        <i class="el-icon-user-solid" style="font-size: 30px;line-height: 50px"></i>-->
+<!--        <div style="line-height: 50px;background-color:red;width: 60px;height: 30px;">-->
+<!--            <div id="my" style="display: inline-block">111</div>-->
+<!--        </div>-->
+        <el-form :inline="true" :model="formInline" class="demo-form-inline">
+            <el-form-item label="原密码">
+                <el-input v-model="formInline.opwd" placeholder="原密码"></el-input>
+            </el-form-item>
+            <el-form-item label="新密码">
+                <el-input v-model="formInline.npwd" placeholder="新密码"></el-input>
+            </el-form-item>
+            <el-form-item>
+                <el-button type="primary" @click="onSubmit">修改密码</el-button>
+            </el-form-item>
+            <div id="my" style="display: inline-block;float: right;margin: 10px;line-height: 20px">2</div>
+        </el-form>
+
+    </div>
+
+
+    <template>
+        <el-table
+                :data="tableData"
+                style="width: 100%"
+                :row-class-name="tableRowClassName">
+            <el-table-column
+                    type="index"
+                    width="50">
+            </el-table-column>
+            <el-table-column
+                    prop="id_"
+                    label="选手编号"
+                    align="center">
+            </el-table-column>
+            <el-table-column
+                    prop="name_"
+                    label="姓名"
+                    align="center">
+            </el-table-column>
+            <el-table-column
+                    prop="department_"
+                    align="center"
+                    label="部门">
+            </el-table-column>
+            <el-table-column
+                    prop="sorce"
+                    align="center"
+                    label="你的评分">
+            </el-table-column>
+            <el-table-column
+                    align="center"
+                    label="打分">
+                <template slot-scope="scope">
+                    <el-button type="primary" @click="getid(scope.row)">评分</el-button>
+                </template>
+
+
+            </el-table-column>
+        </el-table>
+    </template>
+    <el-dialog
+            title="请输入你的评分"
+            :visible.sync="dialogVisible"
+            width="30%">
+        <el-form :model="tmp" ref="numberValidateForm" label-width="100px" class="demo-ruleForm">
+            <el-form-item
+                    label="评分"
+                    prop="fs"
+                    :rules="[
+                { required: true, message: '评分不能为空'},
+                { type: 'number', message: '评分必须为数字值'}
+            ]"
+            >
+                <el-input v-model.number="tmp.fs" autocomplete="off"></el-input>
+            </el-form-item>
+            <el-form-item>
+                <el-button type="primary" @click="submitForm('numberValidateForm')">提交</el-button>
+            </el-form-item>
+        </el-form>
+                    </span>
+    </el-dialog>
+</div>
+
+<script>
+    new Vue({
+        el:'#app',
+        data() {
+            return {
+                dialogVisible: false,
+                tmp: {
+                    fs: '',
+                    id: ''
+                },
+                my:{
+                    name1:'',
+                    pwd1:'',
+                },
+                tableData: [],
+                timer:null,
+                formInline: {
+                    opwd: '',
+                    npwd: ''
+                },
+                tmpdata:{
+                    department_1:'',
+                    id_1:'',
+                    mavg_1:0.0,
+                    name_1:'',
+                    oavg_1:'',
+                    psf1:'',
+                    sorce1:'',
+                    tmpname:'',
+                    total_1:'',
+                }
+            }
+        },
+        created(){
+            var that_ = this;
+            this.timer = window.setInterval(()=>{
+                axios({
+                    method:"get",
+                    url:"http://47.113.191.237:8080/myServlet"
+                }).then(function (resp) {
+
+                    that_.tableData = resp.data;
+
+
+                })
+            },5000)
+        },
+        mounted(){
+            var that_ = this;
+            axios({
+                method:"get",
+                url:"http://47.113.191.237:8080/myServlet"
+            }).then(function (resp) {
+                var name0 = resp.data[1].tmpname;
+                // alert(name0)
+                // that_.tmpdata = resp.data(0);
+                // alert(that_.tmpdata.tmpname)
+                document.getElementById("my").innerHTML=name0;
+                that_.tableData = resp.data;
+            })
+        },
+        methods: {
+            tableRowClassName({row, rowIndex}) {
+                if (rowIndex === 1) {
+                    return 'warning-row';
+                } else if (rowIndex === 3) {
+                    return 'success-row';
+                }
+                return '';
+            },
+            getid(e){
+                this.tmp.id = e.id_;
+                this.dialogVisible=true
+            },
+            submitForm(formName) {
+                var that_ = this;
+                axios({
+                    method:"post",
+                    url:"http://47.113.191.237:8080/myServlet",
+                    data:that_.tmp
+                }).then(function (resp) {
+                    that_.tableData = resp.data;
+                })
+                this.dialogVisible=false
+            },
+            onSubmit() {
+                var that_ = this;
+                axios({
+                    method:"post",
+                    url:"http://47.113.191.237:8080/alter1Servlet",
+                    data:that_.formInline
+                }).then(function (resp) {
+
+                    var r = resp.data;
+                    if(r=="success"){
+                        alert("修改成功！");
+
+                    }else if(r =="mmcw"){
+                        alert("密码错误！");
+                    }
+                })
+            }
+        }
+    })
+</script>
+</body>
+</html>
